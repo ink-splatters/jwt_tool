@@ -39,6 +39,12 @@ This tool is written natively in **Python 3** (version 3.6+) using the common li
 
 ## Installation
 
+## @inksplatters fork:
+
+```sh
+pip install jwt_tool@git+https://github.com/ink-splatters/jwt_tool@rye
+```
+
 ### Docker
 The preferred usage for jwt_tool is with the [official Dockerhub-hosted jwt_tool docker image](https://hub.docker.com/r/ticarpi/jwt_tool)  
 The base command for running this is as follows:  
