@@ -1,7 +1,7 @@
 [project]
 name = "jwt-tool"
-version = "0.1.0"
-description = "Add your description here"
+version = "2.2.7"
+description = "A toolkit for testing, tweaking and cracking JSON Web Tokens"
 authors = [
     { name = "Andy Tyler", email="andy.tyler@gmail.com" }
 ]
@@ -30,4 +30,4 @@ dev-dependencies = []
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/jwt_tool"]
+packages = ["jwt_tool"]

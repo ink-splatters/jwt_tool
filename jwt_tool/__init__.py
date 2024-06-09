@@ -1,13 +1,12 @@
-#!/usr/bin/env python3
-#
-# JWT_Tool version 2.2.7 (28_05_2024)
 # Written by Andy Tyler (@ticarpi)
 # Please use responsibly...
 # Software URL: https://github.com/ticarpi/jwt_tool
 # Web: https://www.ticarpi.com
 # Twitter: @ticarpi
 
-jwttoolvers = "2.2.7"
+import importlib.metadata
+jwttoolvers = importlib.metadata.version("jwt_tool")
+
 import ssl
 import sys
 import os
@@ -23,31 +22,18 @@ from datetime import datetime
 import configparser
 from http.cookies import SimpleCookie
 from collections import OrderedDict
-try:
-    from Cryptodome.Signature import PKCS1_v1_5, DSS, pss
-    from Cryptodome.Hash import SHA256, SHA384, SHA512
-    from Cryptodome.PublicKey import RSA, ECC
-except:
-    print("WARNING: Cryptodome libraries not imported - these are needed for asymmetric crypto signing and verifying")
-    print("On most Linux systems you can run the following command to install:")
-    print("python3 -m pip install pycryptodomex\n")
-    exit(1)
-try:
-    from termcolor import cprint
-except:
-    print("WARNING: termcolor library is not imported - this is used to make the output clearer and oh so pretty")
-    print("On most Linux systems you can run the following command to install:")
-    print("python3 -m pip install termcolor\n")
-    exit(1)
-try:
-    import requests
-    from requests.packages.urllib3.exceptions import InsecureRequestWarning
-    requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-except:
-    print("WARNING: Python Requests libraries not imported - these are needed for external service interaction")
-    print("On most Linux systems you can run the following command to install:")
-    print("python3 -m pip install requests\n")
-    exit(1)
+
+
+from Cryptodome.Signature import PKCS1_v1_5, DSS, pss
+from Cryptodome.Hash import SHA256, SHA384, SHA512
+from Cryptodome.PublicKey import RSA, ECC
+
+from termcolor import cprint
+
+import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
 # To fix broken colours in Windows cmd/Powershell: uncomment the below two lines. You will need to install colorama: 'python3 -m pip install colorama'
 # import colorama
 # colorama.init()
@@ -1821,7 +1807,7 @@ def printLogo():
     print(" \x1b[36mVersion "+jwttoolvers+"          \x1b[0m      \\______|             \x1b[36m@ticarpi\x1b[0m      ")
     print()
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(epilog="If you don't have a token, try this one:\neyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6InRpY2FycGkifQ.bsSwqj2c2uI9n7-ajmi3ixVGhPUiY7jO9SUn9dm15Po", formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("jwt", nargs='?', type=str,
                         help="the JWT to tinker with (no need to specify if in header/cookies)")
