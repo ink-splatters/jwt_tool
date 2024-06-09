@@ -582,7 +582,7 @@ def crackSig(sig, contents):
                 nextKey = keyLst.readline()
         else:
             return
-    if cracked == False:
+    if cracked is False:
         cprintc("[-] Key not in dictionary", "red")
         if not args.mode:
             cprintc("\n===============================\nAs your list wasn't able to crack this token you might be better off using longer dictionaries, custom dictionaries, mangling rules, or brute force attacks.\nhashcat (https://hashcat.net/hashcat/) is ideal for this as it is highly optimised for speed. Just add your JWT to a text file, then use the following syntax to give you a good start:\n\n[*] dictionary attacks: hashcat -a 0 -m 16500 jwt.txt passlist.txt\n[*] rule-based attack:  hashcat -a 0 -m 16500 jwt.txt passlist.txt -r rules/best64.rule\n[*] brute-force attack: hashcat -a 3 -m 16500 jwt.txt ?u?l?l?l?l?l?l?l -i --increment-min=6\n===============================\n", "cyan")
@@ -682,7 +682,7 @@ def testKey(key, sig, contents, headDict, quiet):
         return cracked
     else:
         cracked = False
-        if quiet == False:
+        if quiet is False:
             if len(key) > 25:
                 cprintc("[-] "+key[0:25].decode('UTF-8')+"...(output trimmed) is not the correct key", "red")
             else:
@@ -1055,7 +1055,7 @@ def parseJWKS(jwksfile):
                 pubkeyName = genECPubFromJWKS(x, y, kid, nowtime)
                 cprintc("[+] "+pubkeyName, "green")
                 cprintc("\nAttempting to verify token using "+pubkeyName, "cyan")
-                valid = verifyTokenEC(headDict, paylDict, sig, pubkeyName)
+                verifyTokenEC(headDict, paylDict, sig, pubkeyName)
             except:
                 pass
             try:
@@ -1065,7 +1065,7 @@ def parseJWKS(jwksfile):
                 pubkeyName = genRSAPubFromJWKS(n, e, kid, nowtime)
                 cprintc("[+] "+pubkeyName, "green")
                 cprintc("\nAttempting to verify token using "+pubkeyName, "cyan")
-                valid = verifyTokenRSA(headDict, paylDict, sig, pubkeyName)
+                verifyTokenRSA(headDict, paylDict, sig, pubkeyName)
             except:
                 pass
     except:
@@ -1080,7 +1080,7 @@ def parseJWKS(jwksfile):
             pubkeyName = genECPubFromJWKS(x, y, kid, nowtime)
             cprintc("[+] "+pubkeyName, "green")
             cprintc("\nAttempting to verify token using "+pubkeyName, "cyan")
-            valid = verifyTokenEC(headDict, paylDict, sig, pubkeyName)
+            verifyTokenEC(headDict, paylDict, sig, pubkeyName)
         except:
             pass
         try:
@@ -1091,7 +1091,7 @@ def parseJWKS(jwksfile):
             pubkeyName = genRSAPubFromJWKS(n, e, kid, nowtime)
             cprintc("[+] "+pubkeyName, "green")
             cprintc("\nAttempting to verify token using "+pubkeyName, "cyan")
-            valid = verifyTokenRSA(headDict, paylDict, sig, pubkeyName)
+            verifyTokenRSA(headDict, paylDict, sig, pubkeyName)
         except:
             pass
 
@@ -1202,11 +1202,11 @@ def dissectPayl(paylDict, count=False):
                 for subclaim in paylDict[claim]:
                     if isinstance(castInput(paylDict[claim][subclaim]), str):
                         cprintc("    [+] "+subclaim+" = \""+str(paylDict[claim][subclaim])+"\"", "green")
-                    elif paylDict[claim][subclaim] == None:
+                    elif paylDict[claim][subclaim] is None:
                         cprintc("    [+] "+subclaim+" = null", "green")
-                    elif paylDict[claim][subclaim] == True and not paylDict[claim][subclaim] == 1:
+                    elif paylDict[claim][subclaim] is True and not paylDict[claim][subclaim] == 1:
                         cprintc("    [+] "+subclaim+" = true", "green")
-                    elif paylDict[claim][subclaim] == False and not paylDict[claim][subclaim] == 0:
+                    elif paylDict[claim][subclaim] is False and not paylDict[claim][subclaim] == 0:
                         cprintc("    [+] "+subclaim+" = false", "green")
                     else:
                         cprintc("    [+] "+subclaim+" = "+str(paylDict[claim][subclaim]), "green")
@@ -1280,18 +1280,18 @@ def rejigToken(headDict, paylDict, sig):
         if isinstance(headDict[claim], dict):
             cprintc("[+] "+claim+" = JSON object:", "green")
             for subclaim in headDict[claim]:
-                if headDict[claim][subclaim] == None:
+                if headDict[claim][subclaim] is None:
                     cprintc("    [+] "+subclaim+" = null", "green")
-                elif headDict[claim][subclaim] == True:
+                elif headDict[claim][subclaim] is True:
                     cprintc("    [+] "+subclaim+" = true", "green")
-                elif headDict[claim][subclaim] == False:
+                elif headDict[claim][subclaim] is False:
                     cprintc("    [+] "+subclaim+" = false", "green")
                 elif isinstance(headDict[claim][subclaim], str):
                     cprintc("    [+] "+subclaim+" = \""+str(headDict[claim][subclaim])+"\"", "green")
                 else:
                     cprintc("    [+] "+subclaim+" = "+str(headDict[claim][subclaim]), "green")
         else:
-            if type(headDict[claim]) == str:
+            if isinstance(headDict[claim], str):
                 cprintc("[+] "+claim+" = \""+str(headDict[claim])+"\"", "green")
             else:
                 cprintc("[+] "+claim+" = "+str(headDict[claim]), "green")
@@ -1681,9 +1681,9 @@ def preScan():
                 exit(1)
             elif shallWeGoOn == "n":
                 exit(1)
-    origResSize, origResCode = config['argvals']['ressize'], config['argvals']['rescode']
+    _origResSize, origResCode = config['argvals']['ressize'], config['argvals']['rescode']
     jwtOut("null", "Prescan: no token", "Prescan: no token")
-    nullResSize, nullResCode = config['argvals']['ressize'], config['argvals']['rescode']
+    _nullResSize, nullResCode = config['argvals']['ressize'], config['argvals']['rescode']
     if config['argvals']['canaryvalue'] == "":
         if origResCode == nullResCode:
             cprintc("Valid and missing token requests return the same Status Code.\nYou should probably specify something from the page that identifies the user is logged-in (e.g. -cv \"Welcome back, ticarpi!\")", "red")
@@ -1922,7 +1922,7 @@ def main():
         os.rename(configFileName, path+"/old_("+config['services']['jwt_tool_version']+")_jwtconf.ini")
         createConfig()
         exit(1)
-    with open(path+"/null.txt", 'w') as nullfile:
+    with open(path+"/null.txt", 'w'):
         pass
     findJWT = ""
 
@@ -2160,8 +2160,6 @@ def main():
             with open(injectionfile[2], "r", encoding='utf-8', errors='ignore') as valLst:
                 nextVal = valLst.readline()
                 cprintc("Generating tokens from injection file...", "cyan")
-                utf8errors = 0
-                wordcount = 0
                 while nextVal:
                     if injectionfile[0] == "payload":
                         newpaylDict, newPaylB64 = injectpayloadclaim(injectionfile[1], nextVal.rstrip())
