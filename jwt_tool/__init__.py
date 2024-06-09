@@ -4,10 +4,8 @@
 # Web: https://www.ticarpi.com
 # Twitter: @ticarpi
 
-import importlib.metadata
-jwttoolvers = importlib.metadata.version("jwt_tool")
+# ruff: noqa: E722
 
-import ssl
 import sys
 import os
 import re
@@ -15,14 +13,11 @@ import hashlib
 import hmac
 import base64
 import json
-import random
 from urllib.parse import urljoin, urlparse
 import argparse
 from datetime import datetime
 import configparser
-from http.cookies import SimpleCookie
 from collections import OrderedDict
-
 
 from Cryptodome.Signature import PKCS1_v1_5, DSS, pss
 from Cryptodome.Hash import SHA256, SHA384, SHA512
@@ -32,11 +27,30 @@ from termcolor import cprint
 
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+import importlib.metadata
+jwttoolvers = importlib.metadata.version("jwt_tool")
+
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 # To fix broken colours in Windows cmd/Powershell: uncomment the below two lines. You will need to install colorama: 'python3 -m pip install colorama'
 # import colorama
 # colorama.init()
+
+# globals set in main()
+args = None
+configFileName = None
+config = None
+contents = None
+headDict = None
+jwt = None
+logFilename = None
+newContents = None
+parser = None
+path = None
+paylB64 = None
+paylDict = None
+sig = None
 
 def cprintc(textval, colval):
     if not args.bare:
@@ -199,7 +213,7 @@ def jwtOut(token, fromMod, desc=""):
                     headertoken[0].append(headerSub[0])
                     if headerSub[1] == 1:
                         headertoken[1] = 1
-                except:
+                except: 
                     pass
         else:
             headertoken = [[],0]
@@ -327,7 +341,7 @@ def tamperToken(paylDict, headDict, sig):
                 for subclaim in headDict[pair]:
                     cprintc("    [+] "+subclaim+" = "+str(headDict[pair][subclaim]), "green")
             else:
-                if type(headDict[pair]) == str:
+                if isinstance(headDict[pair], str):
                     cprintc("["+str(menuNum)+"] "+pair+" = \""+str(headDict[pair])+"\"", "green")
                 else:
                     cprintc("["+str(menuNum)+"] "+pair+" = "+str(headDict[pair]), "green")
@@ -1186,7 +1200,7 @@ def dissectPayl(paylDict, count=False):
         elif isinstance(paylDict[claim], dict):
                 cprintc("["+placeholder+"] "+claim+" = JSON object:", "green")
                 for subclaim in paylDict[claim]:
-                    if type(castInput(paylDict[claim][subclaim])) == str:
+                    if isinstance(castInput(paylDict[claim][subclaim]), str):
                         cprintc("    [+] "+subclaim+" = \""+str(paylDict[claim][subclaim])+"\"", "green")
                     elif paylDict[claim][subclaim] == None:
                         cprintc("    [+] "+subclaim+" = null", "green")
@@ -1197,7 +1211,7 @@ def dissectPayl(paylDict, count=False):
                     else:
                         cprintc("    [+] "+subclaim+" = "+str(paylDict[claim][subclaim]), "green")
         else:
-            if type(paylDict[claim]) == str:
+            if isinstance(paylDict[claim], str):
                 cprintc("["+placeholder+"] "+claim+" = \""+str(paylDict[claim])+"\"", "green")
             else:
                 cprintc("["+placeholder+"] "+claim+" = "+str(paylDict[claim]), "green")
@@ -1272,7 +1286,7 @@ def rejigToken(headDict, paylDict, sig):
                     cprintc("    [+] "+subclaim+" = true", "green")
                 elif headDict[claim][subclaim] == False:
                     cprintc("    [+] "+subclaim+" = false", "green")
-                elif type(headDict[claim][subclaim]) == str:
+                elif isinstance(headDict[claim][subclaim], str):
                     cprintc("    [+] "+subclaim+" = \""+str(headDict[claim][subclaim])+"\"", "green")
                 else:
                     cprintc("    [+] "+subclaim+" = "+str(headDict[claim][subclaim]), "green")
@@ -1808,6 +1822,20 @@ def printLogo():
     print()
 
 def main():
+    global args
+    global configFileName
+    global config
+    global contents
+    global headDict
+    global jwt
+    global logFilename
+    global newContents
+    global parser
+    global path
+    global paylB64
+    global paylDict
+    global sig
+
     parser = argparse.ArgumentParser(epilog="If you don't have a token, try this one:\neyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6InRpY2FycGkifQ.bsSwqj2c2uI9n7-ajmi3ixVGhPUiY7jO9SUn9dm15Po", formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("jwt", nargs='?', type=str,
                         help="the JWT to tinker with (no need to specify if in header/cookies)")
